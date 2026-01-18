@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vs/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+publish/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive
+.env
+appsettings.Development.json
+appsettings.Production.json
+
+# Logs
+*.log

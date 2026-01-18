@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: todoapp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ToDoDb
+      POSTGRES_USER: todoapp_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme123}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todoapp_user -d ToDoDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - todoapp_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+      - BUILDKIT_INLINE_CACHE=1
+      network: host 
+    container_name: todoapp_api
+    restart: unless-stopped
+    
+    ports:
+      - "5027:5027"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ToDoDb;Username=todoapp_user;Password=${DB_PASSWORD:-changeme123}
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY:-32karakterguclusifre_12345678910}
+      - JwtSettings__Issuer=ToDoApp
+      - JwtSettings__Audience=Users
+      - JwtSettings__ExpirationMinutes=60
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - todoapp_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  todoapp_network:
+    driver: bridge

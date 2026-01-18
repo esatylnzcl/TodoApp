@@ -11,3 +11,11 @@
 *.log
 *.tmp
 *.cache
+
+# Environment files
+.env
+appsettings.Production.json
+
+# Keep examples
+!.env.example
+!appsettings.Production.Example.json
